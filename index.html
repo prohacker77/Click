@@ -5,11 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SHUBAM - PORTFOLIO</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     html, body {
       height: 100%;
@@ -112,6 +108,22 @@
       font-size: 0.9em;
       color: #ccc;
     }
+
+    .tap-text {
+      position: fixed;
+      bottom: 20px;
+      width: 100%;
+      text-align: center;
+      font-size: 1em;
+      color: #00c6ff;
+      opacity: 0.8;
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 0.3; }
+    }
   </style>
 </head>
 <body>
@@ -123,8 +135,8 @@
   </video>
   <div class="overlay"></div>
 
-  <!-- Background Music -->
-  <audio id="bg-music" autoplay loop>
+  <!-- Background Music (won’t play until user clicks) -->
+  <audio id="bg-music" loop>
     <source src="music.mp3" type="audio/mp3">
     Your browser does not support the audio element.
   </audio>
@@ -161,17 +173,25 @@
     <footer>© 2025 HARSH. All rights reserved.</footer>
   </div>
 
+  <div class="tap-text">🎵 Tap anywhere to play music</div>
+
   <script>
-    // Try to play audio automatically
-    document.addEventListener("DOMContentLoaded", function() {
-      const music = document.getElementById("bg-music");
-      const playPromise = music.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          console.log("Autoplay blocked. User interaction needed.");
-        });
-      }
-    });
+    // Play background music after first user interaction
+    const music = document.getElementById("bg-music");
+    const tapText = document.querySelector(".tap-text");
+
+    const playMusic = () => {
+      music.play().then(() => {
+        tapText.style.display = "none";
+      }).catch(err => {
+        console.log("Playback blocked:", err);
+      });
+      document.removeEventListener("click", playMusic);
+      document.removeEventListener("touchstart", playMusic);
+    };
+
+    document.addEventListener("click", playMusic);
+    document.addEventListener("touchstart", playMusic);
   </script>
 
 </body>
