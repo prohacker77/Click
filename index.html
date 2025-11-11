@@ -144,14 +144,15 @@
 <body>
 
   <!-- Background Video -->
-  <video id="bgVideo" muted loop playsinline>
+  <video id="bgVideo" muted loop playsinline preload="auto">
     <source src="bg.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
   </video>
   <div class="overlay"></div>
 
   <!-- START SCREEN -->
   <div id="startScreen">
-    <h1>✨ tap to begins ✨</h1>
+    <h1>✨ Touch to Start Your Project ✨</h1>
   </div>
 
   <!-- MAIN CONTENT -->
@@ -196,30 +197,33 @@
     const video = document.getElementById("bgVideo");
 
     async function startProject() {
-      // Start background video and unmute if muted
-      video.play().catch(e => console.log("Video autoplay error:", e));
-
-      // Start background music
-      music.currentTime = 0;
       try {
-        await music.play();
-        console.log("Music started!");
-      } catch (err) {
-        console.error("Music play blocked:", err);
-      }
+        // Start video
+        video.muted = true; // ensure autoplay works
+        await video.play();
+        console.log("Video started");
 
-      // Fade out start screen
-      startScreen.classList.add("fadeOut");
-      setTimeout(() => {
-        startScreen.style.display = "none";
-        mainContent.style.display = "block";
-        document.body.style.overflow = "auto";
-      }, 1000);
+        // Play music after short delay (some browsers need async gap)
+        setTimeout(() => {
+          music.volume = 0.6;
+          music.play().catch(e => console.log("Music blocked:", e));
+        }, 300);
+
+        // Fade out start screen and show content
+        startScreen.classList.add("fadeOut");
+        setTimeout(() => {
+          startScreen.style.display = "none";
+          mainContent.style.display = "flex";
+          document.body.style.overflow = "auto";
+        }, 1000);
+      } catch (err) {
+        console.log("Autoplay issue:", err);
+      }
     }
 
-    // Wait for user interaction
-    window.addEventListener("click", startProject, { once: true });
-    window.addEventListener("touchstart", startProject, { once: true });
+    // Wait for tap or click
+    startScreen.addEventListener("click", startProject, { once: true });
+    startScreen.addEventListener("touchstart", startProject, { once: true });
   </script>
 
 </body>
